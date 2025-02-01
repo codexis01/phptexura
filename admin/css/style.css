@@ -1,0 +1,198 @@
+/* fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sedan:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montaga&display=swap');
+
+/* Body */
+body{
+    overflow-x: hidden;
+}
+.background{
+    height: 100vh;
+    background-color: #FBFFE4;
+}
+
+/* headings */
+h1{
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: 50px;
+    width: 350px;
+}
+h3{
+    font-family: "Sedan", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 40px;
+    width: 300px;
+}
+
+
+.btn{
+    font-family: "Poppins", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 15px;
+}
+
+/* Navbar */
+.navbar{
+    background-color: #FBFFE4;
+}
+ 
+.texura{
+    margin-top: 100px;
+    margin-left: 20px;
+}
+.nav-item{
+    font-family: "Poppins", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 16px;
+    margin-right: 20px;
+}
+
+/* banner */
+.product{
+    width: auto;
+    height: 500px;
+    background-color: rgb(196, 180, 180);
+}
+h1{
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 55px;
+    width: 400px;
+  }
+h3{
+    font-family: "Sedan", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 45px;
+    width: 350px;
+}
+.span1{
+background-color: white;
+}
+.span2{
+background-color: #EBD96B;
+}
+.fashion{
+background-image: url('../img/circle2.png');
+background-repeat: no-repeat;
+background-size: cover;
+
+height: 100vh;
+padding-top: 30px;
+}
+
+.home .image1{
+    left:240px;
+
+}
+.home .image2{
+    left: 60px;
+    top: 60px;
+    
+}
+.home .image3{
+    left: 600px;
+}
+.home .image4{
+    left: 420px;
+    top: 60px;
+}
+
+
+
+.content{
+    margin-top: 80px;
+}
+
+
+
+/* carousel */
+
+
+
+
+
+
+
+/* About us */
+/* .about h3{
+
+} */
+p{
+    font-family: "Inter", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 18px;
+    color: #838278;
+}
+.about h2{
+    font-family: "Montaga", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 55px;
+}
+
+/* How We Deliver */
+.fabric{
+    /* height: 174px; */
+    /* text-align: center; */
+    /* height: 250px; */
+    /* background-color: red; */
+    width: 420px;
+    background-image: url('../img/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.arrow .arrow1{
+    width: 260px;
+    left: 310px;
+    top: 210px;
+}
+.arrow .arrow2{
+    width: 260px;
+    left: 300px;
+    top: 400px;
+}
+.weaving_arrow .arrow3{
+    width: 260px;
+    left: 310px;
+    top: 490px;
+}
+.weaving_arrow .arrow4{
+    width: 260px;
+    left: 300px;
+    top: 680px;
+}
+.tailoring .arrow5{
+    width: 260px;
+    left: 310px;
+    top: 760px;
+}
+.tailoring .arrow6{
+    width: 260px;
+    left: 300px;
+    top: 950px;
+}
+
+
+.deliver{
+    background-color:#FBFFE4 ;
+}
+
+
+/* footer */
+.line{
+    border: 2px solid rgb(0, 0, 0);
+  
+}
