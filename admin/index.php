@@ -17,46 +17,42 @@ $conn = new mysqli($host, $user, $pass, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-// Handle Add to Cart action
 if (isset($_POST['add_to_cart'])) {
-    // Decode the existing cart cookie if it exists
-    $cart = isset($_COOKIE['cart']) ? json_decode($_COOKIE['cart'], true) : [];
+  // Ensure user is logged in
+  if (!isset($_SESSION['user_id'])) {
+      echo "<script>alert('Please log in to add items to the cart.'); window.location='login.php';</script>";
+      exit();
+  }
 
-    // Get product details from form submission
-    $product_id = $_POST['product_id'];
-    $product_name = htmlspecialchars($_POST['product_name']);
-    $product_price = $_POST['product_price'];
-    $product_image = htmlspecialchars($_POST['product_image']);
+  $user_id = $_SESSION['user_id'];
+  $product_id = $_POST['product_id'];
+  $product_name = htmlspecialchars($_POST['product_name']);
+  $product_price = $_POST['product_price'];
+  $product_image = htmlspecialchars($_POST['product_image']);
+  $size = $_POST['size'] ?? 'M'; // Default size M
 
-    // Create product array
-    $product = [
-        'id' => $product_id,
-        'name' => $product_name,
-        'price' => $product_price,
-        'image' => $product_image,
-        'quantity' => 1
-    ];
+  // Check if the product already exists in the user's cart
+  $stmt = $conn->prepare("SELECT id FROM cart WHERE user_id = ? AND product_id = ?");
+  $stmt->bind_param("ii", $user_id, $product_id);
+  $stmt->execute();
+  $stmt->store_result();
 
-    // Check if the product is already in the cart
-    $found = false;
-    foreach ($cart as $key => $item) {
-        if ($item['id'] == $product_id) {
-            $cart[$key]['quantity'] += 1;
-            $found = true;
-            break;
-        }
-    }
+  if ($stmt->num_rows > 0) {
+      // Product already in cart, show alert but do not update
+      echo "<script>alert('Product already in cart!');</script>";
+  } else {
+      // Product does not exist, insert a new row
+      $insert_stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, product_name, product_price, product_image, quantity, size) VALUES (?, ?, ?, ?, ?, 1, ?)");
+      $insert_stmt->bind_param("iisdss", $user_id, $product_id, $product_name, $product_price, $product_image, $size);
+      $insert_stmt->execute();
 
-    // Add product to cart if it's not found
-    if (!$found) {
-        $cart[] = $product;
-    }
+      echo "<script>alert('Product added to cart!');</script>";
+  }
 
-    // Set the updated cart in a cookie
-    setcookie('cart', json_encode($cart), time() + (86400 * 30), "/"); // 30 days expiry
-    echo "<script>alert('Product added to cart!');</script>";
+  $stmt->close();
 }
+
+
 
 // Fetch products from database
 $sql = "SELECT * FROM products_table";
@@ -66,7 +62,7 @@ $result = $conn->query($sql);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=x, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Texura</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -79,7 +75,6 @@ $result = $conn->query($sql);
         overflow: hidden;
       }
       .card img {
-          /* width: 300px; */
         height: 500px;
         object-fit: cover;
       }
@@ -166,8 +161,8 @@ $result = $conn->query($sql);
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link" href="index.php">HOME</a></li>
-                        <li class="nav-item"><a class="nav-link" href="newArrival.html">NEW ARRIVAL</a></li>
-                        <li class="nav-item"><a class="nav-link" href="shop.html">SHOP</a></li>
+                        <li class="nav-item"><a class="nav-link" href="newarrival.php">NEW ARRIVAL</a></li>
+                        <li class="nav-item"><a class="nav-link" href="shop.php">SHOP</a></li>
                     </ul>
                     
                     <ul class="navbar-nav ms-auto">
@@ -175,9 +170,9 @@ $result = $conn->query($sql);
                             <!-- User logged in -->
                             <li class="nav-item">
                                 <a class="nav-link" href="cart.php">
-                                <svg width="20" height="20" viewBox="0 0 31 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.4878 5.17515C13.2614 4.33124 14.3106 3.85714 15.4047 3.85714C16.4987 3.85714 17.5479 4.33124 18.3215 5.17515C19.0951 6.01907 19.5297 7.16367 19.5297 8.35714V10.0616H11.2797V8.35714C11.2797 7.16367 11.7143 6.01907 12.4878 5.17515ZM7.74395 10.0616V8.35714C7.74395 6.1407 8.55106 4.01503 9.98772 2.44775C11.4244 0.880483 13.3729 0 15.4047 0C17.4364 0 19.3849 0.880483 20.8216 2.44775C22.2583 4.01503 23.0654 6.1407 23.0654 8.35714V10.0616H27.1904C27.7908 10.0616 28.2952 10.5539 28.3617 11.2048L30.3584 30.735C30.3638 30.7877 30.3712 30.8487 30.3792 30.9171C30.4291 31.3354 30.5116 32.0253 30.3841 32.6906C30.1147 34.0964 29.1322 35.2504 27.8551 35.6377C27.2791 35.8123 26.624 35.7927 26.2252 35.7807C26.1417 35.7781 26.0696 35.7758 26.0119 35.7758H4.79752C4.73961 35.7758 4.66748 35.7781 4.58418 35.7807C4.1853 35.7927 3.53037 35.8123 2.95412 35.6377C1.67719 35.2504 0.694517 34.0966 0.425166 32.6906C0.297715 32.0253 0.380097 31.3354 0.430045 30.9171C0.438201 30.8487 0.445508 30.7877 0.450882 30.735L2.44764 11.2048C2.51418 10.5539 3.01859 10.0616 3.61895 10.0616H7.74395Z" fill="black"/>
-                      </svg>
+                                    <svg width="20" height="20" viewBox="0 0 31 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.4878 5.17515C13.2614 4.33124 14.3106 3.85714 15.4047 3.85714C16.4987 3.85714 17.5479 4.33124 18.3215 5.17515C19.0951 6.01907 19.5297 7.16367 19.5297 8.35714V10.0616H11.2797V8.35714C11.2797 7.16367 11.7143 6.01907 12.4878 5.17515ZM7.74395 10.0616V8.35714C7.74395 6.1407 8.55106 4.01503 9.98772 2.44775C11.4244 0.880483 13.3729 0 15.4047 0C17.4364 0 19.3849 0.880483 20.8216 2.44775C22.2583 4.01503 23.0654 6.1407 23.0654 8.35714V10.0616H27.1904C27.7908 10.0616 28.2952 10.5539 28.3617 11.2048L30.3584 30.735C30.3638 30.7877 30.3712 30.8487 30.3792 30.9171C30.4291 31.3354 30.5116 32.0253 30.3841 32.6906C30.1147 34.0964 29.1322 35.2504 27.8551 35.6377C27.2791 35.8123 26.624 35.7927 26.2252 35.7807C26.1417 35.7781 26.0696 35.7758 26.0119 35.7758H4.79752C4.73961 35.7758 4.66748 35.7781 4.58418 35.7807C4.1853 35.7927 3.53037 35.8123 2.95412 35.6377C1.67719 35.2504 0.694517 34.0966 0.425166 32.6906C0.297715 32.0253 0.380097 31.3354 0.430045 30.9171C0.438201 30.8487 0.445508 30.7877 0.450882 30.735L2.44764 11.2048C2.51418 10.5539 3.01859 10.0616 3.61895 10.0616H7.74395Z" fill="black"/>
+                                    </svg>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -196,49 +191,6 @@ $result = $conn->query($sql);
             </div>
         </nav>
     </div>
-     <!-- Homepage -->
-      <div class="fashion">
-     <div class="rounded-5 ms-4">
-        <div class="row inner_banner">
-          <div class="col-12 col-md-4 align-content-center content">
-            <h1><span class="span0"><span class="span1">WELCOME </span> TO</span>
-                <span class="span2">TEXURA....</span></h1>   
-            <h3>Where Tradition Meets Modern Fashion</h3> 
-            <a type="button" class="btn btn-lg btn-dark" href="shop.html">Shop Now</a>
-          </div>
-
-          <div class="col-12 col-md-8">
-            
-            <div class="position-relative home">
-              <img
-                src="img/home.png"
-                class="position-absolute image1"
-                alt="Plant"
-              />
-              <img
-              src="img/home.png"
-              class="position-absolute image2"
-                alt="Vector graphic 1"
-              />
-              
-              <img
-              src="img/home.png"
-              class="position-absolute image3"
-                alt="Vector graphic 2"
-              />
-              <img
-              src="img/home.png"
-              class="position-absolute image4"
-                alt="Vector graphic 2"
-              />
-            </div>  
-               
-          </div>
-        </div>
-      </div>
-      </div>
-     
-   
 
 <!-- Product Carousel -->
 <div class="container my-5">
@@ -269,7 +221,7 @@ $result = $conn->query($sql);
                                         <input type="hidden" name="product_name" value="<?= htmlspecialchars($item['name']) ?>">
                                         <input type="hidden" name="product_price" value="<?= isset($item['discounted_price']) ? $item['discounted_price'] : $item['price'] ?>">
                                         <input type="hidden" name="product_image" value="<?= htmlspecialchars($item['image1']) ?>">
-                                        <button type="submit" name="add_to_cart" class="btn btn-sm carbt">Add to Cart</button>
+                                        <button type="submit" name="add_to_cart" class="btn btn-sm">Add to Cart</button>
                                     </form>
                                 </div>
                             </div>
@@ -302,7 +254,7 @@ $result = $conn->query($sql);
                                     <input type="hidden" name="product_name" value="<?= htmlspecialchars($item['name']) ?>">
                                     <input type="hidden" name="product_price" value="<?= isset($item['discounted_price']) ? $item['discounted_price'] : $item['price'] ?>">
                                     <input type="hidden" name="product_image" value="<?= htmlspecialchars($item['image1']) ?>">
-                                    <button type="submit" name="add_to_cart" class="btn btn-sm carbt">Add to Cart</button>
+                                    <button type="submit" name="add_to_cart" class="btn btn-sm">Add to Cart</button>
                                 </form>
                             </div>
                         </div>
@@ -328,6 +280,7 @@ $result = $conn->query($sql);
 // Close database connection
 $conn->close();
 ?>
+
 <!-- About us -->
 <div class="container mt-5" id="about_html">
   <div class="about">
