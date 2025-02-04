@@ -136,69 +136,41 @@ $product = $result->fetch_assoc();
             </div>
             
             <form action="checkout_process.php" method="POST">
-                <h5>Delivery Address</h5>
+    <h5>Delivery Address</h5>
 
-                <div class="form-group mt-3">
-                    <label for="name">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
-                </div>
+    <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+    <input type="hidden" name="product_name" value="<?php echo htmlspecialchars($product['name']); ?>">
+    <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
+    <input type="hidden" name="quantity" value="<?php echo $quantity; ?>">
+    <input type="hidden" name="size" value="<?php echo htmlspecialchars($size); ?>">
+    <input type="hidden" name="total_price" value="<?php echo ($product['price'] * $quantity + 50 + 5); ?>"> <!-- Including Delivery and Platform Fee -->
 
-                <div class="form-group mt-3">
-                    <label for="contact">Contact Number</label>
-                    <input type="text" class="form-control" id="contact" name="contact" required>
-                </div>
+    <div class="form-group mt-3">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
 
-                <div class="form-group mt-3">
-                    <label for="pincode">Pincode</label>
-                    <input type="text" class="form-control" id="pincode" name="pincode" required>
-                </div>
+    <div class="form-group mt-3">
+        <label for="contact">Contact Number</label>
+        <input type="text" class="form-control" id="contact" name="contact" required>
+    </div>
 
-                <div class="form-group mt-3">
-                    <label for="locality">Locality (Optional)</label>
-                    <input type="text" class="form-control" id="locality" name="locality">
-                </div>
+    <div class="form-group mt-3">
+        <label for="address">Address</label>
+        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+    </div>
 
-                <div class="form-group mt-3">
-                    <label for="address">Address</label>
-                    <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                </div>
+    <div class="form-group mt-3">
+        <label for="payment_method">Payment Method</label>
+        <select class="form-select" id="payment_method" name="payment_method" required>
+            <option value="COD">Cash on Delivery</option>
+            <option value="Online">Online Payment</option>
+        </select>
+    </div>
 
-                <div class="form-group mt-3">
-                    <label for="city">City</label>
-                    <input type="text" class="form-control" id="city" name="city" required>
-                </div>
+    <button type="submit" class="btn btn-custom btn-block mt-4">Place Order</button>
+</form>
 
-                <div class="form-group mt-3">
-                    <label for="state">State</label>
-                    <select class="form-select" id="state" name="state" required>
-                        <option value="Uttarakhand">Uttarakhand</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Karnataka">Karnataka</option>
-                    </select>
-                </div>
-
-                <div class="form-group mt-3">
-                    <label for="landmark">Landmark (Optional)</label>
-                    <input type="text" class="form-control" id="landmark" name="landmark">
-                </div>
-
-                <div class="form-group mt-3">
-                    <label for="alt_phone">Alternate Phone (Optional)</label>
-                    <input type="text" class="form-control" id="alt_phone" name="alt_phone">
-                </div>
-
-                <div class="form-group mt-3">
-                    <label for="payment">Payment Method</label>
-                    <select class="form-select" id="payment" name="payment_method" required>
-                        <option value="COD">Cash on Delivery</option>
-                        <option value="Card">Credit/Debit Card</option>
-                        <option value="UPI">UPI Payment</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-custom btn-block mt-4">Place Orders</button>
-            </form>
         </div>
     </div>
 </div>
